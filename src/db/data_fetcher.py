@@ -67,6 +67,7 @@ class DataFetcher:
         return self.db.fetch(query)
 
 if __name__ == '__main__':
-    fetcher = DataFetcher('config/config.yaml', Database())
+    fetcher = DataFetcher('config/config.yaml', {'start_year':1985, 'end_year':2013}, Database())
     result = fetcher.get_valid_record_count()
     print(result)
+    print(fetcher.get_patent_ti_abs())
