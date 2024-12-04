@@ -4,8 +4,6 @@ from spacy.matcher import Matcher
 import time
 from functools import partial
 
-# spacy.require_gpu()
-
 class NounPhraseExtractor:
     def __init__(self, keep_longest=False):
         with open('config/config.yaml', mode='r', encoding='utf-8') as f:
