@@ -2,7 +2,7 @@ from src.db.database import Database
 import yaml
 
 class DataFetcher:
-    def __init__(self, config_path, time_range: tuple, db: Database):
+    def __init__(self, config_path, time_range: dict, db: Database):
         with open(config_path, mode='r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
             fetch_config = config['data_fetcher']
@@ -14,8 +14,8 @@ class DataFetcher:
             self.appl_title_text_field = fetch_config['appl_title_text_field']
             self.appl_abstract_text_field = fetch_config['appl_abstract_text_field']
             self.patent_type = fetch_config['patent_type']
-            self.application_start_year = time_range[0]
-            self.application_end_year = time_range[1]
+            self.application_start_year = time_range['start_year']
+            self.application_end_year = time_range['end_year']
             self.application_year_field = fetch_config['application_year_field']
             self.not_null_field = fetch_config['not_null_field']
             self.row_limit = fetch_config['row_limit']
@@ -40,7 +40,7 @@ class DataFetcher:
     def get_patent_ti_abs(self):
         query = f'''
             SELECT
-                m.appl_id,
+                m.uuid,
                 t.{self.appl_title_text_field},
                 a.{self.appl_abstract_text_field}
             FROM
@@ -48,11 +48,11 @@ class DataFetcher:
             JOIN
                 {self.appl_title_table} t
             ON
-                m.appl_id = t.appl_id
+                m.uuid = t.uuid
             JOIN
                 {self.appl_abstract_table} a
             ON
-                m.appl_id = a.appl_id
+                m.uuid = a.uuid
             WHERE
                 m.patent_type = '{self.patent_type}'
             AND
