@@ -2,7 +2,6 @@ import spacy
 import yaml
 from spacy.matcher import Matcher
 import time
-from functools import partial
 
 class NounPhraseExtractor:
     def __init__(self, keep_longest=False):
