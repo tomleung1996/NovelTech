@@ -20,6 +20,7 @@ class DataFetcher:
             self.not_null_field = fetch_config['not_null_field']
             self.row_limit = fetch_config['row_limit']
             self.order_by = fetch_config['order_by']
+            self.batch_size = fetch_config['batch_size']
     
     def get_valid_record_count(self):
         query = f'''
@@ -64,7 +65,7 @@ class DataFetcher:
             LIMIT
                 {self.row_limit}
         '''
-        return self.db.fetch(query)
+        return self.db.fetch(query, self.batch_size)
 
 if __name__ == '__main__':
     fetcher = DataFetcher('config/config.yaml', {'start_year':1985, 'end_year':2013}, Database())

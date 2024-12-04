@@ -20,7 +20,20 @@ class Database:
             logger.error(f'数据库连接失败: {e}')
             self.connection = None
 
-    def fetch(self, query):
+    # def fetch(self, query):
+    #     if not self.connection:
+    #         logger.error('数据库连接未建立')
+    #         return None
+
+    #     with self.connection.cursor() as cursor:
+    #         try:
+    #             cursor.execute(query)
+    #             return cursor.fetchall()
+    #         except psycopg.Error as e:
+    #             logger.error(f'执行查询失败: {e}')
+    #             return None
+    
+    def fetch(self, query, batch_size=1000):
         if not self.connection:
             logger.error('数据库连接未建立')
             return None
@@ -28,7 +41,11 @@ class Database:
         with self.connection.cursor() as cursor:
             try:
                 cursor.execute(query)
-                return cursor.fetchall()
+                while True:
+                    batch = cursor.fetchmany(batch_size)
+                    if not batch:
+                        break
+                    yield batch
             except psycopg.Error as e:
                 logger.error(f'执行查询失败: {e}')
                 return None
