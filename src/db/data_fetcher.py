@@ -2,7 +2,7 @@ from src.db.database import Database
 import yaml
 
 class DataFetcher:
-    def __init__(self, config_path, db: Database):
+    def __init__(self, config_path, time_range: tuple, db: Database):
         with open(config_path, mode='r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
             fetch_config = config['data_fetcher']
@@ -14,8 +14,8 @@ class DataFetcher:
             self.appl_title_text_field = fetch_config['appl_title_text_field']
             self.appl_abstract_text_field = fetch_config['appl_abstract_text_field']
             self.patent_type = fetch_config['patent_type']
-            self.application_start_year = fetch_config['application_start_year']
-            self.application_end_year = fetch_config['application_end_year']
+            self.application_start_year = time_range[0]
+            self.application_end_year = time_range[1]
             self.application_year_field = fetch_config['application_year_field']
             self.not_null_field = fetch_config['not_null_field']
             self.row_limit = fetch_config['row_limit']
