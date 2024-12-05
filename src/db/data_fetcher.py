@@ -19,6 +19,7 @@ class DataFetcher:
             self.application_year_field = fetch_config['application_year_field']
             self.not_null_field = fetch_config['not_null_field']
             self.row_limit = fetch_config['row_limit']
+            self.offset = fetch_config['offset']
             self.order_by = fetch_config['order_by']
             self.batch_size = fetch_config['batch_size']
     
@@ -62,6 +63,8 @@ class DataFetcher:
                 m.{self.not_null_field} IS NOT NULL
             ORDER BY
                 {self.order_by} DESC
+            OFFSET
+                {self.offset}
             LIMIT
                 {self.row_limit}
         '''
