@@ -2,3 +2,4 @@ config/config.yaml
 __pycache__/
 logs/
 output/
+backup/
