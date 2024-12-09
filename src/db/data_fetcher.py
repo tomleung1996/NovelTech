@@ -43,8 +43,8 @@ class DataFetcher:
         query = f'''
             SELECT
                 m.uuid,
-                t.{self.appl_title_text_field},
-                a.{self.appl_abstract_text_field}
+                COALESCE(t.{self.appl_title_text_field}, ''),
+                COALESCE(a.{self.appl_abstract_text_field}, '')
             FROM
                 {self.appl_main_table} m
             JOIN
@@ -73,5 +73,4 @@ class DataFetcher:
 if __name__ == '__main__':
     fetcher = DataFetcher('config/config.yaml', {'start_year':1985, 'end_year':2013}, Database())
     result = fetcher.get_valid_record_count()
-    print(result)
-    print(fetcher.get_patent_ti_abs())
+    print(next(result))
