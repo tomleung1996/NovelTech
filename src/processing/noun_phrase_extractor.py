@@ -4,7 +4,7 @@ from spacy.matcher import Matcher
 import time
 
 class NounPhraseExtractor:
-    def __init__(self, keep_longest=False):
+    def __init__(self, keep_longest):
         with open('config/config.yaml', mode='r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
             npe_config = config['noun_phrase_extractor']
@@ -12,6 +12,7 @@ class NounPhraseExtractor:
             self.patterns = npe_config['noun_phrase_patterns']
 
         self.nlp = spacy.load(self.model_name, disable=['ner', 'textcat'])
+        self.n_processes = npe_config['n_processes']
         self.matcher = Matcher(self.nlp.vocab)
         self.matcher.add('NounPhrase', self.patterns)
         self.keep_longest = keep_longest
@@ -50,9 +51,9 @@ class NounPhraseExtractor:
         matches = self.keep_valid_matches(matches)
         return list(set([doc[start:end].text for _, start, end in matches]))
 
-    def extract_batch(self, texts, n_processes):
+    def extract_batch(self, texts):
         # 使用pipe批量处理文档
-        docs = self.nlp.pipe(texts, n_process=n_processes)
+        docs = self.nlp.pipe(texts, n_process=self.n_processes)
 
         results = []
         
