@@ -11,6 +11,7 @@ class DataFetcher:
             self.appl_main_table = fetch_config['appl_main_table']
             self.appl_title_table = fetch_config['appl_title_table']
             self.appl_abstract_table = fetch_config['appl_abstract_table']
+            self.appl_reference_table = fetch_config['appl_reference_table']
             self.appl_title_text_field = fetch_config['appl_title_text_field']
             self.appl_abstract_text_field = fetch_config['appl_abstract_text_field']
             self.patent_type = fetch_config['patent_type']
@@ -69,8 +70,42 @@ class DataFetcher:
                 {self.row_limit}
         '''
         return self.db.fetch(query, self.batch_size)
+    
+    def get_patent_citation_count(self):
+        query = f'''
+            SELECT 
+                t1."uuid", 
+                COALESCE(t2.n_cits, 0) AS n_cits
+            FROM 
+                {self.appl_main_table} AS t1
+            LEFT JOIN (
+                SELECT 
+                    CONCAT(apl_country_code, apl_appl_no, apl_kind) AS pub_id, 
+                    COUNT(*) AS n_cits
+                FROM 
+                    {self.appl_reference_table}
+                WHERE 
+                    apl_country_code = 'CN'
+                GROUP BY 
+                    pub_id
+            ) AS t2
+                ON t1.pub_id = t2.pub_id
+            WHERE 
+                t1.patent_type = '{self.patent_type}'
+            AND
+                CAST(t1.{self.application_year_field} AS INT) BETWEEN {self.application_start_year} AND {self.application_end_year}
+            AND
+                t1.{self.not_null_field} IS NOT NULL
+            ORDER BY 
+                n_cits DESC
+            OFFSET
+                {self.offset}
+            LIMIT
+                {self.row_limit}
+        '''
+        return self.db.fetch(query, self.batch_size)
 
 if __name__ == '__main__':
-    fetcher = DataFetcher('config/config.yaml', {'start_year':1985, 'end_year':2013}, Database())
-    result = fetcher.get_valid_record_count()
+    fetcher = DataFetcher('config/config.yaml', {'start_year':2014, 'end_year':2023}, Database())
+    result = fetcher.get_patent_citation_count()
     print(next(result))
