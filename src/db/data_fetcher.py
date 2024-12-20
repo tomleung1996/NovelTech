@@ -104,8 +104,31 @@ class DataFetcher:
                 {self.row_limit}
         '''
         return self.db.fetch(query, self.batch_size)
+    
+    def get_patent_appl_year(self):
+        query = f'''
+            SELECT
+                uuid,
+                CAST({self.application_year_field} AS INT)
+            FROM
+                {self.appl_main_table}
+            WHERE
+                patent_type = '{self.patent_type}'
+            AND
+                CAST({self.application_year_field} AS INT) BETWEEN {self.application_start_year} AND {self.application_end_year}
+            AND
+                {self.not_null_field} IS NOT NULL
+            ORDER BY
+                {self.order_by} DESC
+            OFFSET
+                {self.offset}
+            LIMIT
+                {self.row_limit}
+        '''
+        return self.db.fetch(query, self.batch_size)
+        
 
 if __name__ == '__main__':
     fetcher = DataFetcher('config/config.yaml', {'start_year':2014, 'end_year':2023}, Database())
-    result = fetcher.get_patent_citation_count()
+    result = fetcher.get_patent_appl_year()
     print(next(result))
