@@ -69,7 +69,9 @@ class FrequentNounPhraseFilter:
             np_list = list(filtered_noun_phrase_dict.keys())
             for i in tqdm(range(0, len(np_list), batch_size)):
                 batch_np_list = np_list[i:i+batch_size]
-                translation = self.translate_noun_phrases(batch_np_list)
+                # 将np中的“所述”和“述”去掉
+                translate_batch_np_list = [np.replace('所述', '').replace('述', '') for np in batch_np_list]
+                translation = self.translate_noun_phrases(translate_batch_np_list)
                 for np, eng_np in zip(batch_np_list, translation):
                     f.write(f'{np}\t{eng_np}\n')
         logger.info('翻译完成')
