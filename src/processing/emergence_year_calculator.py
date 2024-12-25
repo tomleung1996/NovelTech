@@ -69,10 +69,15 @@ class EmergenceYearCalculator():
 
         for tech_noun_phrase, group in tech_noun_phrase_annual_count.groupby('tech_noun_phrase'):
             for i in range(len(group) - self.increase_span_threshold):
-                if all(group['increase_ratio'].iloc[i:i+self.increase_span_threshold] >= self.increase_ratio_threshold):
+                # if all(group['increase_ratio'].iloc[i:i+self.increase_span_threshold] >= self.increase_ratio_threshold):
+                if group['increase_ratio'].iloc[i:i+self.increase_span_threshold].mean() >= self.increase_ratio_threshold:
                     emergence_year_df['tech_noun_phrase'].append(tech_noun_phrase)
                     emergence_year_df['emergence_year'].append(group['year'].iloc[i])
                     break
+            
+            if tech_noun_phrase not in emergence_year_df['tech_noun_phrase']:
+                emergence_year_df['tech_noun_phrase'].append(tech_noun_phrase)
+                emergence_year_df['emergence_year'].append(None)
         
         emergence_year_df = pd.DataFrame(emergence_year_df)
         logger.info('计算完成')
