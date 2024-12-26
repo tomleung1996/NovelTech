@@ -95,20 +95,11 @@ class WikipediaMatcher:
             return False
     
     def get_tech_noun_phrase_list(self):
-        # tech_noun_phrase_list = []
         logger.info('开始匹配技术名词短语……')
         for i, np in tqdm(enumerate(self.current_frequent_noun_phrase_translation_list)):
             if self.match(np):
-                # tech_noun_phrase_list.append(np)
                 with open(self.output_path, 'a') as file:
                     file.write(f'{self.current_frequent_noun_phrase_list[i]}\t{np}\n')
-        # logger.info(f'共找到{len(tech_noun_phrase_list)}个技术名词短语')
-
-        # logger.info('开始写入文件……')
-        # with open(self.output_path, 'w') as file:
-        #     for np in tech_noun_phrase_list:
-        #         file.write(np + '\n')
-        # logger.info('写入完成')
 
 
 if __name__ == '__main__':

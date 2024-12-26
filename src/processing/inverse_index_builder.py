@@ -49,11 +49,24 @@ class InverseIndexBuilder():
         
         logger.info('正在为技术术语建立倒排索引……')
         for uuid, np_list in tqdm(self.current_highly_cited_patent_to_np.items()):
+            # for np in np_list:
+            #     if np in self.current_tech_noun_phrases:
+            #         if np not in inverse_index:
+            #             inverse_index[np] = set()
+            #         inverse_index[np].add(uuid)
+            # 有可能np是current_tech_noun_phrases中元素的较短形式，比如current_tech_noun_phrases中有'区块链技术'，但np是'区块链'
             for np in np_list:
                 if np in self.current_tech_noun_phrases:
                     if np not in inverse_index:
                         inverse_index[np] = set()
                     inverse_index[np].add(uuid)
+                    continue
+                
+                for tech_np in self.current_tech_noun_phrases:
+                    if np in tech_np or tech_np in np:
+                        if tech_np not in inverse_index:
+                            inverse_index[tech_np] = set()
+                        inverse_index[tech_np].add(uuid)
         logger.info(f'倒排索引建立完成')
         
         logger.info('正在保存倒排索引……')
